@@ -20,6 +20,12 @@ services.factory('sysService', ['$resource', function ($resource) {
             get_count_obj: {method: POST, params: {actionName: 'get_count_obj'}, isArray: false},
             get_count: {method: POST, params: {actionName: 'get_count'}, isArray: false},
             get_count_zhu: {method: POST, params: {actionName: 'get_count_zhu'}, isArray: false},
+            search_biz: {method: POST, params: {actionName: 'search_biz'}, isArray: false},
+            search_task_info: {method: POST, params: {actionName: 'search_task_info'}, isArray: false},
+            search_template: {method: POST, params: {actionName: 'search_template'}, isArray: false},
+            search_host: {method: POST, params: {actionName: 'search_host'}, isArray: false},
+            add_task: {method: POST, params: {actionName: 'add_task'}, isArray: false},
+            exute_script: {method: POST, params: {actionName: 'exute_script'}, isArray: false},
         });
 }])
 

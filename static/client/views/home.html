@@ -3,27 +3,17 @@
         <legend style="">查询条件</legend>
         <div class="container-fluid">
             <div style="float:left;">
-                <label style="float:left;margin-top: 5px;">系统名：</label>
-                <input type="text" ng-model="args.sys_name" style="width:150px;float:left;"
-                       class="form-control" placeholder="请输入系统名"/>
+                <label style="float:left;margin-top: 5px;">任务名称：</label>
+                <input type="text" ng-model="args.task_name" style="width:150px;float:left;"
+                       class="form-control" placeholder="请输入任务名"/>
             </div>
             <div style="float:left;margin-left: 10px;">
-                <label style="float:left;margin-top: 5px;">系统简称：</label>
-                <input type="text" ng-model="args.sys_code" style="width:150px;float:left;"
-                       class="form-control" placeholder="请输入系统简称"/>
+                <label style="float:left;margin-top: 5px;">任务类型：</label>
+                <input type="text" ng-model="args.task_type" style="width:150px;float:left;"
+                       class="form-control" placeholder="请输入任务类型简称"/>
             </div>
 
-            <div style="float:left;margin-left: 10px;">
-                <label style="float:left;margin-top: 5px;">负责人：</label>
-                <input type="text" ng-model="args.owner" style="width:150px;float:left;"
-                       class="form-control" placeholder="请输入负责人"/>
-            </div>
 
-            <div style="float:left;margin-left: 10px;">
-                <label style="float:left;margin-top: 5px;">下拉选择：</label>
-                <input type="text" cw-selectstr2="templateOption" ng-model="args.selected_id" style="width:150px;float:left;"
-                       class="" />
-            </div>
 
             <div style="float:left;margin-left:15px;">
                 <button ng-click="search_sys_info()" class="btn btn-sm btn-deppon-primary">查询</button>

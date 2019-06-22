@@ -1,10 +1,8 @@
 controllers.controller("home", ["$scope", "loading", "$modal", "confirmModal", "sysService", "errorModal", "msgModal", function ($scope, loading, $modal, confirmModal, sysService, errorModal, msgModal) {
 
     $scope.args = {
-        sys_name: "",
-        sys_code: "",
-        owner: "",
-        selected_id: ""
+        task_name: "",
+        task_type: "",
     };
 
     //内容显示页数和数量
@@ -31,7 +29,7 @@ controllers.controller("home", ["$scope", "loading", "$modal", "confirmModal", "
 
         })
     };
-    $scope.inits();
+
     $scope.setPagingData = function (data, pageSize, page) {
         $scope.PagingData = data.slice((page - 1) * pageSize, page * pageSize);
         $scope.totalSerItems = data.length;
@@ -47,7 +45,7 @@ controllers.controller("home", ["$scope", "loading", "$modal", "confirmModal", "
     //查询系统表
     $scope.search_sys_info = function () {
         loading.open();
-        sysService.search_sys_info({}, $scope.args, function (res) {
+        sysService.search_task_info({}, $scope.args, function (res) {
             loading.close();
             if (res.result) {
                 $scope.hostList = res.data;
@@ -66,16 +64,28 @@ controllers.controller("home", ["$scope", "loading", "$modal", "confirmModal", "
     }, true);
 
 
+    $scope.exute_script = function(res){
+        sysService.exute_script({}, res, function (res) {
+            if (res.result) {
+
+            } else {
+                errorModal.open(res.msg);
+            }
+        })
+    }
+
+
     $scope.add_sys = function () {
         var modalInstance = $modal.open({
-            templateUrl: static_url + 'client/views/addsys.html',
+            templateUrl: static_url + 'client/views/addtask.html',
             windowClass: 'dialog_custom',
-            controller: 'addSys',
+            controller: 'addTask',
             backdrop: 'static'
         });
         modalInstance.result.then(function (res) {
             $scope.hostList.unshift(res);
             $scope.getPagedDataAsync($scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
+            $scope.exute_script(res)
         })
     };
 
@@ -133,17 +143,14 @@ controllers.controller("home", ["$scope", "loading", "$modal", "confirmModal", "
         pagingOptions: $scope.pagingOptions,
         totalServerItems: 'totalSerItems',
         columnDefs: [
-            {field: "sys_name", displayName: "系统名", width: 160},
-            {field: "sys_code", displayName: "系统简称", width: 140},
-            {field: "owners", displayName: "负责人", width: 180},
-            {field: "is_control", displayName: "是否权限控制", width: 160},
-            {field: "department", displayName: "所属产品线", width: 160},
-            {field: "comment", displayName: "备注", width: 180},
+            {field: "task_name", displayName: "任务名称", width: 200},
+            {field: "host", displayName: "巡检服务器", width: 180},
+            {field: "template", displayName: "巡检模板", width: 220},
+            {field: "task_type", displayName: "任务类型", width: 200},
+            {field: "create_time", displayName: "创建时间", width: 220},
             {
                 displayName: "操作",
                 cellTemplate: '<div style="width:100%;padding-top:5px;text-align: center">' +
-                '<span style="cursor: pointer" class="btn btn-xs btn-primary" ng-click="modify_sys(row)">修改</span>&emsp;' +
-                '<span style="cursor: pointer" class="btn btn-xs btn-danger" ng-click="delete_sys(row)">删除</span>' +
                 '<span style="cursor: pointer" class="btn btn-xs btn-danger" ui-sref="my_test({id:row.entity.id})">跳转</span>' +
                 '</div>'
             }

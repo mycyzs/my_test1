@@ -14,5 +14,11 @@ urlpatterns = patterns(
     (r'^get_count_obj$', 'get_count_obj'),
     (r'^get_count$', 'get_count'),
     (r'^get_count_zhu$', 'get_count_zhu'),
+    (r'^search_biz$', 'search_buseness'),
+    (r'^search_task_info$', 'search_task_info'),
+    (r'^search_template$', 'search_template'),
+    (r'^search_host$', 'search_app_host'),
+    (r'^add_task$', 'add_task'),
+    (r'^exute_script$', 'exute_script'),
 
 )

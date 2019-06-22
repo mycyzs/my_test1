@@ -1,0 +1,50 @@
+<div>
+    <div dragable dialog-title="{{ title }}"></div>
+    <div style="width: 100%;padding: 30px 20px 20px 30px;">
+        <div class="form-horizontal">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">业务名称：</label>
+                <div class="col-sm-8">
+                    <input type="text" ng-change="select_biz()" cw-selectstr2="dbOption1" ng-model="args.biz" style="width: 250px">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">巡检模板：</label>
+                <div class="col-sm-8">
+                    <input type="text" cw-selectstr2="dbOption2" ng-model="args.template" style="width: 250px">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">任务名称：</label>
+                <div class="col-sm-8">
+                    <input class="form-control" style="width: 250px;" ng-model="args.task_name" input-hint="任务名称">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">任务类型：</label>
+                <div class="col-sm-8">
+                    <div><input type="radio" name="task_type" value="now" ng-model="args.task_type"><lable>立即</lable></div>
+                    <div><input type="radio" name="task_type"  value="set_time" ng-model="args.task_type"><lable>周期开始时间</lable>
+                        <input type="text" ng-model="args.time" id="daterangepicker_demo2" placeholder="选择日期..."><lable>每隔</lable>
+                        <input type="text" ng-model="args.late_time"><lable>分钟执行一次</lable></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">巡检服务器：</label>
+                <div class="col-sm-8">
+                    <input type="text" cw-selectstr2="dbOption3" ng-model="args.host" style="width: 250px">
+                </div>
+            </div>
+
+
+        </div>
+        <div style="text-align: center;margin-top: 10px;">
+            <button class="btn btn-sm btn-deppon-primary" ng-click="confirm()">
+                确认
+            </button>
+            <button style="margin-left: 20px;" class="btn btn-sm btn-deppon-warning" ng-click="cancel()">
+                取消
+            </button>
+        </div>
+    </div>
+</div>

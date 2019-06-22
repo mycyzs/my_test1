@@ -212,7 +212,7 @@ def get_data(config_kv):
         obj_id = config_kv['config_item']
         inst_name = config_kv['config_inst']
         if obj_id == '' or inst_name == '':
-            return False, '缺少obj_id或者inst_name'
+            return False, u'缺少obj_id或者inst_name'
 
         if obj_id == 'host':
             url = cmdb_host + '/api/v3/hosts/search'

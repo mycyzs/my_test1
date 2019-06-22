@@ -1,5 +1,8 @@
 # -*- coding:utf-8 -*-
+import base64
 import datetime
+import json
+import time
 
 from blueking.component.shortcuts import get_client_by_request, get_client_by_user
 from common.log import logger
@@ -108,8 +111,8 @@ def search_buseness(request):
         user_business_list = []
         if result["result"]:
             user_business_list = [
-                {"bk_biz_id": i["bk_biz_id"], "bk_biz_name": i["bk_biz_name"]} for i in result["data"]["info"]
-                if request.user.username in i["bk_biz_maintainer"].split(",")
+                {"id": i["bk_biz_id"], "text": i["bk_biz_name"]} for i in result["data"]["info"]
+
             ]
         return render_json({"result": True, "data": user_business_list})
     except Exception as e:
@@ -119,6 +122,7 @@ def search_buseness(request):
 # 查询业务下的所有主机
 def search_app_host(request):
     try:
+        request_data = json.loads(request.body)
         client = get_client_by_user(request.user.username)
         kwargs = {
             "bk_app_code": APP_ID,
@@ -130,16 +134,13 @@ def search_app_host(request):
             {
                 "bk_obj_id": "biz",
                 "fields": [
-                    "default",
-                    "bk_biz_id",
-                    "bk_biz_name",
                 ],
                 # 根据业务ID查询主机
                 "condition": [
                     {
                         "field": "bk_biz_id",
                         "operator": "$eq",
-                        "value": 2
+                        "value": int(request_data['biz_id'])
                     }
                 ]
             }
@@ -150,10 +151,8 @@ def search_app_host(request):
         if result["result"]:
             for i in result['data']['info']:
                 host_list.append({
-                    'id':i['host']['bk_host_id'],
+                    'id':i['host']['bk_host_innerip'],
                     'text':i['host']['bk_host_innerip'],
-                    'app_id': i['biz'][0]['bk_biz_id'],
-                    'cloud_id': i['host']['bk_cloud_id'][0]['id']
                 })
         return render_json({"result": True, "data": host_list})
     except Exception as e:
@@ -267,3 +266,65 @@ def get_count_zhu(request):
     ]
 
     return render_json({'result':True,'data':data})
+
+
+# 获取脚本任务Log
+def get_ip_log_content(client, username, task_id, biz_id, i=1):
+    kwargs = {
+        "bk_app_code": APP_ID,
+        "bk_app_secret": APP_TOKEN,
+        "bk_username": username,
+        "job_instance_id": task_id,
+        'bk_biz_id':biz_id
+    }
+    result = client.job.get_job_instance_log(kwargs)
+    if result["result"]:
+        if result["data"][0]["is_finished"]:
+            ip_log_content = []
+            for i in result["data"][0]["step_results"]:
+                if i["ip_status"] == 9:
+                    result_op = True
+                else:
+                    result_op = False
+                for z in i['ip_logs']:
+                    ip_log_content.append({
+                        'result':result_op,
+                        'ip':z['ip'],
+                        'bk_cloud_id':z['bk_cloud_id'],
+                        'log_content':z['log_content'],
+                    })
+            return {"result": True, "data": ip_log_content}
+        else:
+            time.sleep(1)
+            return get_ip_log_content(client, username, task_id,kwargs['bk_biz_id'])
+    else:
+        i += 1
+        if i < 5:
+            time.sleep(1)
+            return get_ip_log_content(client, username, task_id, kwargs['bk_biz_id'])
+        else:
+            err_msg = "get_logContent_timeout;task_id:%s;err_msg:%s" % (task_id, result["message"])
+
+            return {"result":False, "msg": err_msg}
+
+
+def install_mysql_by_script(username, app_id, app_list,script_content, script_type=1, script_timeout=600):
+    client = get_client_by_user(username)
+    kwargs = {
+        "bk_app_code": APP_ID,
+        "bk_app_secret": APP_TOKEN,
+        "bk_biz_id": app_id,
+        "bk_username": username,
+        "script_content": base64.b64encode(script_content),
+        "ip_list": app_list,
+        "script_type": script_type,
+        "account": 'root',
+        "script_timeout": script_timeout
+    }
+    result = client.job.fast_execute_script(kwargs)
+    if result["result"]:
+        task_id = result["data"]["job_instance_id"]
+        time.sleep(2)
+        return get_ip_log_content(client, username, task_id, app_id)
+    else:
+        return {"result": False, "data": result["message"]}

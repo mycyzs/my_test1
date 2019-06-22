@@ -13,11 +13,7 @@ class LoginMiddleware(object):
 
     def process_view(self, request, view, args, kwargs):
         """process_view."""
-        if DEBUG:
-            request.user.chname = 'admin'
-            request.user.username = 'admin'
-            request.user.is_super_user = False
-            return None
+       
 
         if getattr(view, 'login_exempt', False):
             return None
